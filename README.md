@@ -6,8 +6,8 @@ An AI-powered cross-platform desktop application (Windows, macOS, Linux) that ac
 
 ## 🌟 Features
 
-- 🎤 **Real-Time Speech Recognition** — Captures microphone or system audio and transcribes in real-time via OpenAI Whisper.
-- 📸 **Screenshot Analysis** — Captures active interview/coding windows and analyzes LeetCode/System Design problems via OpenAI Vision API (GPT-4o).
+- 🎤 **Real-Time Speech Recognition** — Captures microphone or system audio and transcribes in real-time via GPT-4o Mini Transcribe.
+- 📸 **Screenshot Analysis** — Captures active interview/coding windows and analyzes LeetCode/System Design problems using the selected vision-capable GPT model.
 - 🤖 **AI-Powered Answer Generation** — Generates concise, natural, human-like answers tailored for verbal responses.
 - 🔒 **Screen Share Protection** — Automatically hidden from screen recording & video calls (Zoom, Microsoft Teams, Google Meet).
 - ⚡ **Lightweight & Fast** — Optimized bundle size with minimal startup latency and low memory footprint.
@@ -23,7 +23,7 @@ An AI-powered cross-platform desktop application (Windows, macOS, Linux) that ac
 - **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
 - **Package Manager**: [npm](https://www.npmjs.com/)
-- **AI Integrations**: [OpenAI Node SDK](https://github.com/openai/openai-node) (Whisper API & GPT-4o)
+- **AI Integrations**: [OpenAI Node SDK](https://github.com/openai/openai-node) (GPT-4o Mini Transcribe & GPT chat/vision models)
 - **Icons & Markdown**: Lucide React, React Markdown & Prism Light Syntax Highlighter
 
 ---
@@ -104,7 +104,7 @@ npm run build
 ## 💡 How to Use
 
 1. **Launch the App**: On first run, open **Settings** if your OpenAI API key is not yet set.
-2. **Enter API Key**: Paste your OpenAI API key and choose your preferred model (e.g. `gpt-4o-mini` or `gpt-4o`).
+2. **Enter API Key**: Paste your OpenAI API key. GPT-6 Luna is selected by default; GPT-5.6 Luna, GPT-5.6 Terra, and GPT-4o Mini are also available when enabled for your API account.
 3. **Set Up Context (Optional)**: Paste your resume or background description in Settings to get personalized responses.
 4. **Start Interview Session**: Click **Start** to listen via Microphone or System Audio.
 5. **Real-time Answers**: As questions are spoken, the app detects pauses and streams answer suggestions.
@@ -159,8 +159,8 @@ interview-copilot/
 
 | Option                 | Description                                                  | Default       |
 | :--------------------- | :----------------------------------------------------------- | :------------ |
-| **OpenAI API Key**     | API key used for Whisper transcription and GPT model calls   | _Required_    |
-| **OpenAI Model**       | Model used for generating interview answers                  | `gpt-4o-mini` |
+| **OpenAI API Key**     | API key used for transcription and GPT model calls           | _Required_    |
+| **OpenAI Model**       | Model used for answers and screenshot analysis               | `gpt-6-luna`  |
 | **Resume Description** | Optional candidate profile text for personalized context     | _Empty_       |
 | **Pause Threshold**    | Silence duration (ms) required to trigger question detection | `1500 ms`     |
 | **Window Opacity**     | Adjusts window transparency (30% to 100%)                    | `100%`        |

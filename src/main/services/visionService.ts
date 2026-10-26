@@ -35,9 +35,10 @@ export class VisionService {
     try {
       // Remove data URL prefix if present
       const base64Data = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64
+      const model = this.config.model || 'gpt-6-luna'
 
       const response = await this.client.chat.completions.create({
-        model: this.config.model || 'gpt-4o',
+        model,
         messages: [
           {
             role: 'system',
@@ -83,7 +84,9 @@ If you find ANY of these, respond with JSON where isQuestion=true and include th
           }
         ],
         max_completion_tokens: 1000,
-        temperature: 0.2,
+        temperature: model.startsWith('gpt-5') || model.startsWith('gpt-6') ? 1 : 0.2,
+        reasoning_effort:
+          model.startsWith('gpt-5') || model.startsWith('gpt-6') ? 'low' : undefined,
         response_format: { type: 'json_object' }
       })
 

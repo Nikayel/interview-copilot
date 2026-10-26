@@ -8,12 +8,10 @@ interface ModelOption {
 }
 
 const DEFAULT_MODELS: ModelOption[] = [
-  { id: 'gpt-4o-mini', name: 'GPT-4o Mini (Default)' },
-  { id: 'gpt-4o', name: 'GPT-4o' },
-  { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
-  { id: 'o1-mini', name: 'o1-mini' },
-  { id: 'o3-mini', name: 'o3-mini' }
+  { id: 'gpt-6-luna', name: 'GPT-6 Luna (Default)' },
+  { id: 'gpt-5.6-luna', name: 'GPT-5.6 Luna' },
+  { id: 'gpt-5.6-terra', name: 'GPT-5.6 Terra' },
+  { id: 'gpt-4o-mini', name: 'GPT-4o Mini' }
 ]
 
 export function SettingsModal(): React.ReactNode | null {
@@ -56,16 +54,11 @@ export function SettingsModal(): React.ReactNode | null {
       try {
         const result = await window.api.fetchOpenAIModels(apiKey)
         if (result.success) {
-          setModels(result.models)
+          const supportedModels = DEFAULT_MODELS.filter((option) =>
+            result.models.some((model) => model.id === option.id)
+          )
+          setModels(supportedModels)
           setModelsError(null)
-
-          // If current model is not in the list, set to first available model
-          setLocalSettings((prev) => {
-            if (result.models.length > 0 && !result.models.find((m) => m.id === prev.openaiModel)) {
-              return { ...prev, openaiModel: result.models[0].id }
-            }
-            return prev
-          })
         } else {
           setModelsError(result.error || 'Failed to fetch models')
           setModels([])
@@ -88,19 +81,19 @@ export function SettingsModal(): React.ReactNode | null {
 
   if (!showSettings) return null
 
+  const availableModels = models.length > 0 ? models : DEFAULT_MODELS
   const displayModels =
-    models.length > 0
-      ? models
-      : DEFAULT_MODELS.some((m) => m.id === localSettings.openaiModel) || !localSettings.openaiModel
-        ? DEFAULT_MODELS
-        : [{ id: localSettings.openaiModel, name: localSettings.openaiModel }, ...DEFAULT_MODELS]
+    localSettings.openaiModel &&
+    !availableModels.some((model) => model.id === localSettings.openaiModel)
+      ? [{ id: localSettings.openaiModel, name: localSettings.openaiModel }, ...availableModels]
+      : availableModels
 
   const handleSave = async (): Promise<void> => {
     try {
       setSaveStatus('saving')
       const updatedLocalSettings = {
         ...localSettings,
-        openaiModel: localSettings.openaiModel || 'gpt-4o-mini'
+        openaiModel: localSettings.openaiModel || 'gpt-6-luna'
       }
       const updatedSettings = await window.api.updateSettings(updatedLocalSettings)
       setSettings(updatedSettings as AppSettings)
@@ -198,7 +191,7 @@ export function SettingsModal(): React.ReactNode | null {
             ) : (
               <div className="space-y-1">
                 <select
-                  value={localSettings.openaiModel || 'gpt-4o-mini'}
+                  value={localSettings.openaiModel || 'gpt-6-luna'}
                   onChange={(e) =>
                     setLocalSettings({ ...localSettings, openaiModel: e.target.value })
                   }

@@ -14,6 +14,13 @@ export interface OpenAIConfig {
   resumeDescription?: string
 }
 
+const getTemperature = (model: string, configuredTemperature?: number): number => {
+  if (model.startsWith('gpt-5') || model.startsWith('gpt-6')) {
+    return 1
+  }
+  return configuredTemperature ?? 0.7
+}
+
 const getSystemPrompt = (resumeDescription: string): string => {
   const resumeText = resumeDescription?.trim() || ''
 
@@ -210,12 +217,15 @@ export class OpenAIService extends EventEmitter {
 
     try {
       let fullResponse = ''
+      const model = this.config.model || 'gpt-6-luna'
 
       const stream = await this.client.chat.completions.create({
-        model: this.config.model || 'gpt-4o-mini',
+        model,
         messages: messages,
         max_completion_tokens: this.config.maxTokens || 500,
-        temperature: this.config.temperature || 0.7,
+        temperature: getTemperature(model, this.config.temperature),
+        reasoning_effort:
+          model.startsWith('gpt-5') || model.startsWith('gpt-6') ? 'low' : undefined,
         stream: true
       })
 
@@ -298,14 +308,15 @@ First, identify what the question is asking, then provide:
       let fullResponse = ''
 
       // Use vision-capable model
-      const model = this.config.model || 'gpt-4o-mini'
-      const visionModel = model.includes('gpt-4o') ? model : 'gpt-4o-mini'
+      const visionModel = this.config.model || 'gpt-6-luna'
 
       const stream = await this.client.chat.completions.create({
         model: visionModel,
         messages: messages,
         max_completion_tokens: this.config.maxTokens || 2000, // More tokens for detailed solutions
-        temperature: this.config.temperature || 0.7,
+        temperature: getTemperature(visionModel, this.config.temperature),
+        reasoning_effort:
+          visionModel.startsWith('gpt-5') || visionModel.startsWith('gpt-6') ? 'low' : undefined,
         stream: true
       })
 

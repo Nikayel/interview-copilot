@@ -23,7 +23,7 @@ const getEnvApiKey = (key: string): string => {
 
 const DEFAULT_SETTINGS: AppSettings = {
   openaiApiKey: getEnvApiKey('OPENAI_API_KEY'),
-  openaiModel: process.env.OPENAI_MODEL || process.env.VITE_OPENAI_MODEL || 'gpt-4o-mini',
+  openaiModel: process.env.OPENAI_MODEL || process.env.VITE_OPENAI_MODEL || 'gpt-6-luna',
   alwaysOnTop: true,
   windowOpacity: 1.0,
   pauseThreshold: 1500,
@@ -61,7 +61,11 @@ export class SettingsManager {
           }
         }
 
-        return { ...DEFAULT_SETTINGS, ...savedSettings }
+        const settings = { ...DEFAULT_SETTINGS, ...savedSettings }
+        if (settings.openaiModel === 'gpt-4o-mini') {
+          settings.openaiModel = DEFAULT_SETTINGS.openaiModel
+        }
+        return settings
       }
     } catch (error) {
       console.error('Failed to load settings:', error)

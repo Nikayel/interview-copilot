@@ -59,11 +59,18 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
 
       const response = await client.models.list()
 
-      // Filter for chat completion models and sort them
-      const chatModels = response.data.map((model) => ({
-        id: model.id,
-        name: model.id
-      }))
+      const supportedModelIds = new Set([
+        'gpt-6-luna',
+        'gpt-5.6-luna',
+        'gpt-5.6-terra',
+        'gpt-4o-mini'
+      ])
+      const chatModels = response.data
+        .filter((model) => supportedModelIds.has(model.id))
+        .map((model) => ({
+          id: model.id,
+          name: model.id
+        }))
 
       return { success: true, models: chatModels }
     } catch (error) {
@@ -101,7 +108,7 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
       // Initialize Whisper service for transcription
       whisperService = new WhisperService({
         apiKey: settings.openaiApiKey,
-        model: 'whisper-1',
+        model: 'gpt-4o-mini-transcribe',
         language: 'en'
       })
 
@@ -367,13 +374,10 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
     }
 
     try {
-      // Initialize services if needed
-      if (!visionService) {
-        visionService = new VisionService({
-          apiKey: settings.openaiApiKey,
-          model: 'gpt-4o'
-        })
-      }
+      visionService = new VisionService({
+        apiKey: settings.openaiApiKey,
+        model: settings.openaiModel
+      })
 
       if (!openaiService) {
         openaiService = new OpenAIService({
@@ -389,6 +393,12 @@ export function initializeIpcHandlers(window: BrowserWindow): void {
 
         openaiService.on('complete', (answer) => {
           mainWindow?.webContents.send('answer-complete', answer)
+        })
+      } else {
+        openaiService.updateConfig({
+          apiKey: settings.openaiApiKey,
+          model: settings.openaiModel,
+          resumeDescription: settings.resumeDescription
         })
       }
 
