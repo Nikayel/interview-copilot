@@ -1,192 +1,168 @@
-# Real-Time Interview Copilot
+# Ghost
 
-An AI-powered cross-platform desktop application (Windows, macOS, Linux) that acts as a real-time interview assistant. The app listens to live interview audio, transcribes speech using OpenAI Whisper, detects questions using smart linguistic heuristics, and generates concise, speakable answers using OpenAI GPT-4.
+Ghost is an Electron desktop app for **interview practice and learning**. It can transcribe audio, identify likely questions, stream AI-generated explanations, and analyze a screenshot of a coding or system-design problem.
 
----
+> [!IMPORTANT]
+> **Educational use only. This project is not for cheating. Do not use it during a live interview, exam, or assessment, or to misrepresent your skills or work.** Use it to study, practice, and understand example answers. Get consent before capturing or transcribing anyone else's audio, and follow applicable laws, platform rules, and OpenAI's terms. AI output can be incomplete or incorrect—verify it and learn the underlying material.
 
-## 🌟 Features
+## Star or fork the project
 
-- 🎤 **Real-Time Speech Recognition** — Captures microphone or system audio and transcribes in real-time via GPT-4o Mini Transcribe.
-- 📸 **Screenshot Analysis** — Captures active interview/coding windows and analyzes LeetCode/System Design problems using the selected vision-capable GPT model.
-- 🤖 **AI-Powered Answer Generation** — Generates concise, natural, human-like answers tailored for verbal responses.
-- 🔒 **Screen Share Protection** — Automatically hidden from screen recording & video calls (Zoom, Microsoft Teams, Google Meet).
-- ⚡ **Lightweight & Fast** — Optimized bundle size with minimal startup latency and low memory footprint.
-- 📌 **Always on Top & Opacity Controls** — Stays visible above interview windows with customizable window transparency.
-- 🌙 **Modern Dark Theme** — Sleek UI built with React 19 and Tailwind CSS.
-- 🌐 **Cross-Platform Support** — Runs natively on Windows, macOS, and Linux.
+This repository is currently private. Only people with access can view it; make it public in GitHub repository settings before expecting the general public to star or fork it.
 
----
+- **Star it:** Visit [Nikayel/interview-copilot](https://github.com/Nikayel/interview-copilot) and click **Star** to bookmark the project and show your support.
+- **Fork it:** Open the repository and click **Fork**. GitHub will create a copy under your account.
+- **Clone your fork:**
 
-## 🛠 Tech Stack
+  ```bash
+  git clone https://github.com/<your-username>/interview-copilot.git
+  cd interview-copilot
+  ```
 
-- **Framework**: [Electron](https://www.electronjs.org/) + [electron-vite](https://electron-vite.org/)
-- **Frontend**: [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Package Manager**: [npm](https://www.npmjs.com/)
-- **AI Integrations**: [OpenAI Node SDK](https://github.com/openai/openai-node) (GPT-4o Mini Transcribe & GPT chat/vision models)
-- **Icons & Markdown**: Lucide React, React Markdown & Prism Light Syntax Highlighter
+  Replace `<your-username>` with your GitHub username.
 
----
+## How the app works
 
-## 📋 Prerequisites
+1. **Choose an audio source.** Start capture with a microphone or, where supported and permitted, system audio. The app needs the relevant operating-system permissions.
+2. **Transcribe speech.** Non-silent audio is buffered locally and sent to the OpenAI transcription API when a segment has at least about one second of audio and one second of silence has passed; a 20-second limit also triggers processing. The current transcription model is `gpt-4o-mini-transcribe`.
+3. **Detect questions and generate responses.** The app uses question-detection logic to identify likely questions, then sends the detected text to the selected OpenAI chat model. The response streams into the app as it is generated.
+4. **Analyze a problem screenshot (optional).** Use the screenshot action to capture another desktop window. The app sends the image to the selected vision-capable model and displays its analysis.
+5. **Review settings and history.** Add optional background/resume context, choose a model, adjust window appearance, and review or clear saved answer history.
 
-Before running the application, ensure you have:
+### Data and privacy
 
-1. **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
-2. **npm**: Package manager (included with Node.js)
-3. **OpenAI API Key**: Obtain from [OpenAI API Keys](https://platform.openai.com/api-keys)
+- Audio is sent to OpenAI for transcription; detected question text and optional context are sent to the selected OpenAI model. A screenshot is sent when you use screenshot analysis.
+- The app saves settings and up to 100 history entries in Electron's local user-data folder. It uses Electron `safeStorage` to encrypt the API key when the operating system supports it; when encryption is unavailable, the key may be stored unencrypted in the local settings file.
+- Window content protection is enabled in the app, but its behavior depends on the operating system and other software. **It is not a privacy or screen-sharing guarantee.** Do not rely on it to hide activity.
 
----
+## Features
 
-## 🚀 Getting Started
+- Microphone capture and system-audio capture where supported
+- Speech transcription and question detection
+- Streaming AI-generated practice answers
+- Optional screenshot analysis for coding and system-design practice
+- Optional resume/background context
+- Local answer history, with controls to delete entries or clear history
+- Always-on-top and window-opacity settings
+- Electron, React, and TypeScript desktop app for Windows, macOS, and Linux (permissions and capabilities vary by platform)
 
-### 1. Clone & Install
+## Requirements
+
+- Node.js **20.19+** or **22.12+**
+- npm (included with Node.js)
+- An OpenAI API key and API access to the models you choose
+
+## Run locally
 
 ```bash
-# Clone the repository
-git clone https://github.com/elias-soykat/interview-copilot.git
+git clone https://github.com/Nikayel/interview-copilot.git
 cd interview-copilot
-
-# Install dependencies using npm
 npm install
-```
-
-### 2. Development
-
-Start the app in development mode with Hot Module Replacement (HMR):
-
-```bash
 npm run dev
 ```
 
----
+When the app opens, go to **Settings** and enter your OpenAI API key. You can optionally choose a model and add background context there.
 
-## 📦 Building for Production
+For local development, you can also put the key in a root-level `.env` file:
 
-Build platform-specific packages for **Windows**, **macOS**, and **Linux**:
+```dotenv
+OPENAI_API_KEY=your_openai_api_key
+```
 
-### 🪟 Windows
+Do not commit `.env` or share your API key. The repository's `.gitignore` excludes `.env`.
+
+## Models and settings
+
+The app defaults to `gpt-6-luna`. The model selector includes `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-4o-mini` when available to your API account. The transcription model is configured separately as `gpt-4o-mini-transcribe`.
+
+| Setting | What it does | Default |
+| --- | --- | --- |
+| OpenAI API key | Authenticates transcription and model requests | Required |
+| OpenAI model | Generates practice answers and screenshot analysis | `gpt-6-luna` |
+| Resume/background context | Optional context for answer generation | Empty |
+| Pause threshold | Displayed and saved in Settings; currently not applied to audio processing | 1500 ms |
+| Window opacity | Adjusts the app window's opacity | 100% |
+| Always on top | Keeps the app window above other windows | Enabled |
+
+Model availability, features, and API costs depend on your OpenAI account. Review your provider's current documentation and pricing before use.
+
+## Development commands
 
 ```bash
-npm run build:win
+npm run dev          # Start the app in development mode
+npm run typecheck    # Type-check the main and renderer processes
+npm run lint         # Run ESLint
+npm run build        # Type-check and build the app
 ```
 
-_Generates an executable installer (`.exe`) in the `dist` directory._
+## Build packages
 
-### 🍎 macOS
+Run the platform-specific command on the operating system for which you want to build:
 
 ```bash
-npm run build:mac
+npm run build:win    # Windows
+npm run build:mac    # macOS
+npm run build:linux  # Linux
 ```
 
-_Generates macOS bundle (`.dmg` / `.app`) in the `dist` directory._
+Packaged output is written to `dist/`. Native build tools and signing/notarization may be needed for some platforms and distribution methods.
 
-### 🐧 Linux
+## Platform notes
 
-```bash
-npm run build:linux
-```
+- **Windows:** Grant microphone access in Windows privacy settings. Screen-capture protection behavior depends on the capture application and operating-system support.
+- **macOS:** Grant microphone and screen-recording permissions as prompted. System-audio capture support depends on the macOS version and capture source.
+- **Linux:** Audio capture depends on the desktop environment and audio stack (such as PulseAudio or PipeWire). Check platform permissions and dependencies if capture is unavailable.
 
-_Generates Linux packages (`.AppImage`, `.deb`, `.snap`) in the `dist` directory._
+## Contributing
 
-### ⚙️ General Build & Typecheck
+Contributions that improve learning, accessibility, reliability, or documentation are welcome. Please keep the educational-use disclaimer intact.
 
-```bash
-# Run type checking
-npm run typecheck
+1. Fork the repository and clone your fork (see [Star or fork the project](#star-or-fork-the-project)).
+2. Create a branch for your change:
 
-# Build bundle assets
-npm run build
-```
+   ```bash
+   git checkout -b your-change
+   ```
 
----
+3. Install dependencies and make your changes:
 
-## 💡 How to Use
+   ```bash
+   npm install
+   ```
 
-1. **Launch the App**: On first run, open **Settings** if your OpenAI API key is not yet set.
-2. **Enter API Key**: Paste your OpenAI API key. GPT-6 Luna is selected by default; GPT-5.6 Luna, GPT-5.6 Terra, and GPT-4o Mini are also available when enabled for your API account.
-3. **Set Up Context (Optional)**: Paste your resume or background description in Settings to get personalized responses.
-4. **Start Interview Session**: Click **Start** to listen via Microphone or System Audio.
-5. **Real-time Answers**: As questions are spoken, the app detects pauses and streams answer suggestions.
-6. **Take Screenshot Solution**: Click **Screenshot** to capture an active problem statement or LeetCode question for step-by-step solutions.
+4. Run the relevant checks:
 
----
+   ```bash
+   npm run typecheck
+   npm run lint
+   npm run build
+   ```
 
-## 📁 Project Structure
+5. Commit your changes, push the branch to your fork, and open a pull request against `Nikayel/interview-copilot`.
 
-```
-interview-copilot/
-├── electron-builder.yml            # Electron Builder configuration
-├── electron.vite.config.ts         # Vite build setup for Main, Preload & Renderer
-├── package.json                    # Project scripts & dependencies
-├── resources/                      # Application icons & branding assets
+Please do not include API keys, personal interview recordings, screenshots, or other sensitive data in commits or issues.
+
+## Project structure
+
+```text
+.
+├── build/                    # Platform icons and macOS entitlements
+├── resources/                # App icon assets
+├── electron-builder.yml      # Desktop packaging configuration
+├── electron.vite.config.ts   # Main, preload, and renderer build configuration
+├── package.json              # Dependencies and npm scripts
+├── pnpm-lock.yaml            # pnpm lockfile
 └── src/
-    ├── main/                       # Electron Main Process (Node.js)
-    │   ├── index.ts                # App entry point & window manager
-    │   ├── ipc/
-    │   │   └── handlers.ts         # IPC communication endpoints
-    │   └── services/
-    │       ├── historyManager.ts   # Local history persistence
-    │       ├── openaiService.ts    # Answer & solution generation
-    │       ├── questionDetector.ts # Linguistic question parser
-    │       ├── screenshotService.ts# Window capture service
-    │       ├── settingsManager.ts  # Encrypted settings storage
-    │       ├── visionService.ts    # OpenAI Vision analysis
-    │       └── whisperService.ts   # Speech-to-text audio transcription
-    ├── preload/                    # Secure IPC bridge between Main & Renderer
-    │   ├── index.ts
-    │   └── index.d.ts
-    └── renderer/                   # React Frontend (Vite)
-        └── src/
-            ├── App.tsx             # Main React application component
-            ├── assets/             # Global CSS styles
-            ├── components/         # Modular UI components
-            │   ├── AnswerPanel.tsx
-            │   ├── Header.tsx
-            │   ├── HistoryPanel.tsx
-            │   ├── MarkdownRenderer.tsx
-            │   ├── SettingsModal.tsx
-            │   ├── StatusBar.tsx
-            │   └── TranscriptPanel.tsx
-            ├── hooks/              # Custom React hooks
-            ├── services/           # Web Audio API capture processing
-            └── store/              # Zustand global state store
+    ├── main/                 # Electron window, IPC, and application services
+    │   ├── ipc/              # Renderer-to-main process handlers
+    │   └── services/         # OpenAI, transcription, detection, history, settings, screenshots
+    ├── preload/              # Typed, restricted bridge between Electron and the UI
+    └── renderer/src/
+        ├── components/       # React interface
+        ├── hooks/            # Renderer hooks
+        ├── services/         # Microphone and system-audio capture
+        └── store/            # Zustand application state
 ```
 
----
+## License
 
-## ⚙️ Configuration Reference
-
-| Option                 | Description                                                  | Default       |
-| :--------------------- | :----------------------------------------------------------- | :------------ |
-| **OpenAI API Key**     | API key used for transcription and GPT model calls           | _Required_    |
-| **OpenAI Model**       | Model used for answers and screenshot analysis               | `gpt-6-luna`  |
-| **Resume Description** | Optional candidate profile text for personalized context     | _Empty_       |
-| **Pause Threshold**    | Silence duration (ms) required to trigger question detection | `1500 ms`     |
-| **Window Opacity**     | Adjusts window transparency (30% to 100%)                    | `100%`        |
-| **Always on Top**      | Pins the application window above all other windows          | `Enabled`     |
-
----
-
-## 💻 OS-Specific Platform Notes
-
-### 🪟 Windows
-
-- Screen protection (`setContentProtection`) hides the window from Zoom, Microsoft Teams, and Discord screen shares.
-- Ensure microphone permissions are enabled in **Windows Settings > Privacy & Security > Microphone**.
-
-### 🍎 macOS
-
-- On macOS, grant **Screen Recording** and **Microphone** permissions under **System Settings > Privacy & Security**.
-- System audio capture uses desktop audio streams supported on macOS 13+.
-
-### 🐧 Linux
-
-- PulseAudio / PipeWire manages microphone and desktop audio streams.
-- Supported targets include `AppImage`, `deb`, and `snap`.
-
----
-
-## 📄 License
-
-MIT License — feel free to use and adapt for your preparation.
+This repository does not currently include a license file. Please check with the project owner before redistributing or reusing the code beyond what GitHub's terms permit.

@@ -45,9 +45,10 @@ export class ScreenshotService {
       )
 
       // Filter out the AI assistant app window
-      // Common patterns: "Interview Copilot", "interview-copilot", etc.
+      // Exclude both the current app name and legacy project names.
       const appWindowPatterns = [
-        'Interview Copilot',
+        'ghost',
+        'interview copilot',
         'interview-copilot',
         'interview',
         'electron',
